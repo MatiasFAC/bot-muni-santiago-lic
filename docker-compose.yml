@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  selenium:
+    image: selenium/standalone-chrome:latest
+    container_name: selenium
+    ports:
+      - "4444:4444"
+      - "5900:5900"
+      - "7900:7900"
+    environment:
+      # - SE_VNC_PASSWORD=secret
+      - SE_VNC_NO_PASSWORD=1
+      - SE_START_VNC=true
+  
+  bot:
+    build: ./bot
+    container_name: bot-muni
+    depends_on:
+      - selenium
+    environment:
+      - GET_MSG=http://api/msg/
+      - TIME_REFRESH_SECONDS=15
+      - SELENIUM_SERVER=http://selenium:4444/wd/hub
+      - ENV=prod # prod, dev
+    volumes:
+      - ./bot:/bot
