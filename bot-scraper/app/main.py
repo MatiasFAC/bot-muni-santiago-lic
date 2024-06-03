@@ -4,7 +4,7 @@ from loguru import logger
 
 env_main_web = os.environ.get('MAIN_WEB', 'https://tramites.munistgo.cl/reservahoralicencia/')
 env_rut = os.environ.get('RUT', '19773246-6')
-env_get_msg = os.environ.get('GET_MSG', 'http://api/msg/')
+env_api_msg_url = os.environ.get('API_MSG_URL', 'http://api-telegram:8000/msg/')
 env_time_refresh_seconds = os.environ.get('TIME_REFRESH_SECONDS', '15')
 env_selenium_server = os.environ.get('SELENIUM_SERVER', 'http://127.0.0.1:4444/wd/hub')
 env = os.environ.get('ENV', 'prod') # prod, dev, test
@@ -22,7 +22,7 @@ def env_validations() -> None:
 
     logger.debug(f"env_main_web:             {env_main_web}")
     logger.debug(f"env_rut:                  {env_rut}")
-    logger.debug(f"env_get_msg:              {env_get_msg}")
+    logger.debug(f"env_api_msg_url:          {env_api_msg_url}")
     logger.debug(f"env_time_refresh_seconds: {env_time_refresh_seconds}")
     logger.debug(f"env:                      {env}")
     
@@ -38,7 +38,7 @@ def env_validations() -> None:
         logger.error("Invalid TIME_REFRESH_SECONDS provided. env_time_refresh_seconds not set.")
         exit(1)
 
-    if env not in ['prod', 'dev', 'test']:
+    if env not in ['prod', 'dev']:
         logger.error("Invalid ENV provided. env not set.")
         exit(1)
 
@@ -150,11 +150,12 @@ def bot() -> bool:
 def get_msg() -> None:
     import requests
 
-    logger.info(f"Sending message to {env_get_msg}.")
+    logger.info(f"Sending message to {env_api_msg_url}.")
     try:
-        requests.get(env_get_msg, params={'msg', 'https://tramites.munistgo.cl/reservahoralicencia/'})
+        params = {'msg': 'https://tramites.munistgo.cl/reservahoralicencia/'}
+        requests.get(env_api_msg_url, params=params)
     except Exception as e:
-        logger.error(f"Error sending message to {env_get_msg}. {e}")
+        logger.error(f"Error sending message to {env_api_msg_url}. {e}")
 
 
 def main():

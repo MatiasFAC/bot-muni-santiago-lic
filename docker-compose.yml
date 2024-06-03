@@ -13,15 +13,31 @@ services:
       - SE_VNC_NO_PASSWORD=1
       - SE_START_VNC=true
   
-  bot:
-    build: ./bot
-    container_name: bot-muni
+  bot-scraper:
+    build: ./bot-scraper
+    container_name: bot-scraper
     depends_on:
       - selenium
     environment:
-      - GET_MSG=http://api/msg/
-      - TIME_REFRESH_SECONDS=15
+      - GET_MSG=http://api-telegram/msg
+      - TIME_REFRESH_SECONDS=60
       - SELENIUM_SERVER=http://selenium:4444/wd/hub
       - ENV=prod # prod, dev
+    
+  bot-telegram:
+    build: ./bot-telegram
+    container_name: bot-telegram
+    environment:
+      - TOKEN=${TELEGRAM_TOKEN}
     volumes:
-      - ./bot:/bot
+      - ./db:/users
+
+  api-telegram:
+    build: ./api-telegram
+    container_name: api-telegram
+    environment:
+      - TOKEN=${TELEGRAM_TOKEN}
+    volumes:
+      - ./db:/users
+  
+
